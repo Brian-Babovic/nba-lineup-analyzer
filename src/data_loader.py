@@ -19,8 +19,8 @@ def get_lineup_data(season, min_minutes=100):
     # Hit the leaguedashlineups endpoint for 5-man lineups
     lineup_data = leaguedashlineups.LeagueDashLineups(
         season=season,
-        measure_type_simple="Advanced",
-        per_mode_simple="Per100Possessions",
+        measure_type_detailed_defense="Advanced",
+        per_mode_detailed="Per100Possessions",
         group_quantity=5,
     )
 

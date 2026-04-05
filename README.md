@@ -30,6 +30,8 @@ Coaching decisions about which five players to put on the floor together are amo
 | `streamlit` | Dashboard web app |
 
 ## 📁 Project Structure
+
+```
 nba-lineup-analyzer/
 │
 ├── data/               # Cached API pulls
@@ -40,6 +42,7 @@ nba-lineup-analyzer/
 │   └── data_loader.py  # Functions to pull and clean lineup data
 ├── requirements.txt
 └── README.md
+```
 
 ## 🔍 Features
 

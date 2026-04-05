@@ -46,9 +46,26 @@ st.markdown(
     "A positive net rating means a lineup outscores opponents; negative means they get outscored."
 )
 
+# Preserve the full unfiltered DataFrame before applying the team filter
+# so we can calculate league-wide averages for comparison
+df_all = df.copy()
+
 # Apply team filter if a specific team is selected
 if selected_team != "All Teams":
     df = df[df["team"] == selected_team]
+
+# --- Team summary metrics (only shown when a specific team is selected) ---
+if selected_team != "All Teams":
+    league_avg_net_rtg = df_all["net_rtg"].mean()
+    team_avg_net_rtg = round(df["net_rtg"].mean(), 1)
+    best_net_rtg = round(df["net_rtg"].max(), 1)
+    vs_league = round(team_avg_net_rtg - league_avg_net_rtg, 1)
+
+    st.subheader(f"📊 {selected_team} Lineup Summary")
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Best Lineup Net Rtg", best_net_rtg)
+    col2.metric("Team Avg Net Rtg", team_avg_net_rtg)
+    col3.metric("vs League Average", f"{vs_league:+.1f}", delta=vs_league)
 
 # --- Lineup Rankings table ---
 st.subheader("Lineup Rankings")

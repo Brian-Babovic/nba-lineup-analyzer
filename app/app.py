@@ -17,7 +17,7 @@ st.sidebar.header("Filters")
 
 season = st.sidebar.selectbox(
     "Season",
-    options=["2024-25", "2023-24", "2022-23"],
+    options=["2025-26", "2024-25", "2023-24", "2022-23"],
 )
 
 min_minutes = st.sidebar.slider(
@@ -56,16 +56,16 @@ if selected_team != "All Teams":
 
 # --- Team summary metrics (only shown when a specific team is selected) ---
 if selected_team != "All Teams":
-    league_avg_net_rtg = df_all["net_rtg"].mean()
-    team_avg_net_rtg = round(df["net_rtg"].mean(), 1)
-    best_net_rtg = round(df["net_rtg"].max(), 1)
-    vs_league = round(team_avg_net_rtg - league_avg_net_rtg, 1)
+    best_row = df.loc[df["net_rtg"].idxmax()]
+    best_net_rtg = round(best_row["net_rtg"], 1)
+    best_minutes = round(best_row["minutes"], 1)
+    best_lineup_name = best_row["lineup"]
 
     st.subheader(f"📊 {selected_team} Lineup Summary")
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
     col1.metric("Best Lineup Net Rtg", best_net_rtg)
-    col2.metric("Team Avg Net Rtg", team_avg_net_rtg)
-    col3.metric("vs League Average", f"{vs_league:+.1f}", delta=vs_league)
+    col2.metric("Minutes Played (Best Lineup)", best_minutes)
+    st.caption(f"Best Lineup: {best_lineup_name}")
 
 # --- Lineup Rankings table ---
 st.subheader("Lineup Rankings")
@@ -73,13 +73,25 @@ st.subheader("Lineup Rankings")
 display_cols = ["team", "lineup", "minutes", "off_rtg", "def_rtg", "net_rtg"]
 ranked = df[display_cols].sort_values("net_rtg", ascending=False).reset_index(drop=True)
 
+def color_net_rtg(val):
+    if val > 0:
+        intensity = min(val / 40, 1.0)
+        g = int(100 + 155 * intensity)
+        return f"background-color: rgb(0, {g}, 60); color: white"
+    elif val < 0:
+        intensity = min(abs(val) / 40, 1.0)
+        r = int(100 + 155 * intensity)
+        return f"background-color: rgb({r}, 0, 30); color: white"
+    else:
+        return "background-color: rgb(80, 80, 80); color: white"
+
 st.dataframe(
     ranked.style.format({
         "minutes": "{:.1f}",
         "off_rtg": "{:.1f}",
         "def_rtg": "{:.1f}",
         "net_rtg": "{:.1f}",
-    }).background_gradient(subset=["net_rtg"], cmap="RdYlGn"),
+    }).map(color_net_rtg, subset=["net_rtg"]),
     use_container_width=True,
 )
 

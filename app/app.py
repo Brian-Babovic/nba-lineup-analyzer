@@ -30,7 +30,7 @@ min_minutes = st.sidebar.slider(
 
 # --- Load data ---
 with st.spinner(f"Loading lineup data for {season}..."):
-    df = load_or_fetch(season, min_minutes=min_minutes)
+    df = load_or_fetch(season)
 
 # Re-apply minutes filter in case cached CSV contains rows below the current threshold
 df = df[df["minutes"] >= min_minutes].reset_index(drop=True)

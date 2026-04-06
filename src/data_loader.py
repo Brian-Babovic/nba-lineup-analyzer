@@ -3,7 +3,7 @@ import pandas as pd
 from nba_api.stats.endpoints import leaguedashlineups
 
 
-def get_lineup_data(season, min_minutes=100):
+def get_lineup_data(season):
     """
     Fetch 5-man lineup data from the NBA API for a given season,
     clean it up, filter it, and save it to a CSV.
@@ -41,9 +41,6 @@ def get_lineup_data(season, min_minutes=100):
     for col in ["minutes", "off_rtg", "def_rtg", "net_rtg"]:
         df[col] = pd.to_numeric(df[col], errors="coerce")
 
-    # Filter to only lineups that meet the minimum minutes threshold
-    df = df[df["minutes"] >= min_minutes].reset_index(drop=True)
-
     # Save the result to a CSV in the data/ directory
     output_path = f"data/lineups_{season}.csv"
     df.to_csv(output_path, index=False)
@@ -52,14 +49,13 @@ def get_lineup_data(season, min_minutes=100):
     return df
 
 
-def load_or_fetch(season, min_minutes=100):
+def load_or_fetch(season):
     """
     Load lineup data from a cached CSV if it exists, otherwise fetch
     it from the NBA API and save it.
 
     Args:
         season (str): Season string in 'YYYY-YY' format, e.g. '2023-24'
-        min_minutes (int): Minimum minutes played to include a lineup (default 100)
 
     Returns:
         pd.DataFrame: Lineup data for the given season
@@ -74,4 +70,4 @@ def load_or_fetch(season, min_minutes=100):
     else:
         # Cache miss — fetch from the API and save
         print(f"No cached data found for {season}, fetching from NBA API...")
-        return get_lineup_data(season, min_minutes=min_minutes)
+        return get_lineup_data(season)
